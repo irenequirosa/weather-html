@@ -1,0 +1,28 @@
+import requests
+import json
+
+lista_ciudades = """
+1. Almeria
+2. Cadiz
+3. Cordoba
+4. Granada
+5. Huelva
+6. Jaen
+7. Malaga
+8. Sevilla
+"""
+
+ciudades = {'1':'Almeria','2':'Cadiz','3':'Cordoba','4':'Granada','5':'Huelva','6':'Jaen','7':'Malaga','8':'Sevilla'}
+
+print lista_ciudades
+
+ciudad_elegida = raw_input("De que ciudad quieres saber la temperatura actual (indica el numero): ")
+
+respuesta = requests.get ('http://api.openweathermap.org/data/2.5/weather',params={'q':'%s,spain' %ciudades[ciudad_elegida]})
+
+respuesta_json = json.loads(respuesta.text)
+
+grados = int(respuesta_json ["main"] ["temp"]) -273
+
+print "La temperatura actual es de %s es %i grados centigrados" % (ciudades[ciudad_elegida], grados)
+
