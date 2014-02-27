@@ -1,28 +1,62 @@
-import requests
 import json
+import requests
+from jinja2 import Template
+import webbrowser
 
-lista_ciudades = """
-1. Almeria
-2. Cadiz
-3. Cordoba
-4. Granada
-5. Huelva
-6. Jaen
-7. Malaga
-8. Sevilla
-"""
 
-ciudades = {'1':'Almeria','2':'Cadiz','3':'Cordoba','4':'Granada','5':'Huelva','6':'Jaen','7':'Malaga','8':'Sevilla'}
+#Funcion que devuelve la cardinalidad del viento:
 
-print lista_ciudades
+def dir_viento (cadena):
+		if cadena>=337.5 and cadena<=360.0 or cadena>=0 and cadena<22.5:
+				return "N"
+		if cadena>=22.5 and cadena<=67.5:
+				return "N.E"
+		if cadena>=67.5 and cadena<112.5:
+				return "E"
+		if cadena>=112.5 and cadena<157.5:
+				return "S.E"
+		if cadena>=157.5 and cadena<202.5:
+				return "S"
+		if cadena>=202.5 and cadena<247.5:
+				return "S.E"
+		if cadena>=247.5 and cadena <292.5:
+				return "O"
+		if cadena>=292.5 and cadena<337.5:
+				return "NO"
 
-ciudad_elegida = raw_input("De que ciudad quieres saber la temperatura actual (indica el numero): ")
+#Creamos diccionario con el nombre de ciudades:
 
-respuesta = requests.get ('http://api.openweathermap.org/data/2.5/weather',params={'q':'%s,spain' %ciudades[ciudad_elegida]})
+dicc_nombre_ciudades={'1':'Almeria','2':'Cadiz','3':'Cordoba','4':'Granada','5':'Huelva','6':'Jaen','7':'Malaga','8':'Sevilla'}
+ciudades=dicc_nombre_ciudades.keys()
+#Claves:
+f=open('plantilla.html','r')
+f_weather=open('weather.html','w')
+html=''
+temperatura_min = []
+temperatura_max = []
+velocidad_viento = []
+direcc_viento = []
+capital = []
 
-respuesta_json = json.loads(respuesta.text)
+for ciudad in ciudades:
+#Respuesta apiweb:
+	respuesta=requests.get("http://api.openweathermap.org/data/2.5/weather?",params={'q':'%s,spain' %ciudad})
+	capital.append(dicc_nombre_ciudades[ciudad])
+	datos = respuesta.text
+	diccionario_api=json.loads(datos)
 
-grados = int(respuesta_json ["main"] ["temp"]) -273
+	viento=float(diccionario_api["wind"]["deg"])
+	direcc_viento.append(dir_viento(viento))
+#Temperatura se muestra en grados celcius:	
+	temperatura_min.append(int(diccionario_api["main"]["temp_min"]-272.15))
+	temperatura_max.append(int(diccionario_api["main"]["temp_max"]-273.15))
+	
+#Translada las millas/horas a Km/h:	
+	velocidad_viento.append(int(diccionario_api["wind"]["speed"]*1.61))
 
-print "La temperatura actual es de %s es %i grados centigrados" % (ciudades[ciudad_elegida], grados)
-
+for linea in f:
+	html += linea
+mi_template=Template(html)
+salida=mi_template.render(ciudades=capital, temperatura_min=temperatura_min, temperatura_max=temperatura_max, viento=velocidad_viento, direccion= direcc_viento)
+f_weather.write(salida)
+webbrowser.open("weather.html")	
