@@ -1,26 +1,23 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='es' meta charset='utf-8'>
+<html xmlns='http://www.w3.org/1999/xhtml' sml:lang='es' meta charset='utf-8'>
 	<head>
 			<title> El tiempo en Andalucia </title>
 	</head>
 	<body>
 	
-		<h1>El tiempo en Andalucia</h1>
+		<h1> El tiempo en Andalucia</h1>
 		{% set count = 0 %}
 		{% for ciudad in nombre_ciudades %}
-		<h2>{{ nombre_ciudades }}</h2>
+		<h2>{{ nombre_ciudades[cont] }}</h2>
 		<u1>
 		
-				<li>Temperatura minima prevista: {{ temperaturaminreal[cont] }} &deg;C</li>
-				<li>Temperatura maxima prevista: {{ temperaturamaxreal[cont] }} &deg;C</li>
+				<li>Temperatura minima prevista: {{ temp_min [cont] }} grados C</li>
+				<li>Temperatura maxima prevista: {{ temp_max [cont] }} grados C</li>
 				<li>Viento: {{ vientreal[cont] }} Km/h, Direccion: {{ direcc_viento[cont] }} </li>
 				
 		</u1>
-		{% set count = count + 1 %}
+		{% set cont = cont + 1 %}
 		{%- endfor %}
 	
 	</body>
 	
 </html>
-
